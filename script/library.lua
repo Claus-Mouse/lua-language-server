@@ -15,6 +15,7 @@ local scope   = require 'workspace.scope'
 local inspect = require 'inspect'
 local jsonb   = require 'json-beautify'
 local jsonc   = require 'jsonc'
+local log     = require 'log'
 
 local m = {}
 
@@ -230,7 +231,10 @@ local function initBuiltIn(uri)
     scp:set('metaPaths', metaPaths)
     local suc = xpcall(function ()
         if not fs.exists(metaPath) then
-            fs.create_directories(metaPath)
+            local ok, err = pcall(fs.create_directories, metaPath)
+            if not ok then
+                log.error("Unable to create metaPath directory:", metaPath, err)
+            end
         end
     end, log.error)
     if not suc then

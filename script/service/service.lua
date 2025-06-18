@@ -260,8 +260,10 @@ function m.lockCache()
         , cacheDir
         , sp.get_id()
     )
-    fs.create_directories(fs.path(myCacheDir))
-    local err
+    local ok, err = pcall(fs.create_directories, fs.path(myCacheDir))
+    if not ok then
+        log.error("Unable to create cache directory:", myCacheDir, err)
+    end
     m.lockFile, err = io.open(myCacheDir .. '/.lock', 'wb')
     if err then
         log.error(err)

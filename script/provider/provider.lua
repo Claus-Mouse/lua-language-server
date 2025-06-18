@@ -1565,7 +1565,10 @@ m.register '$/api/report' {
         nameBuf[#nameBuf+1] = hash
         nameBuf[#nameBuf+1] = encoding
         local fileDir = METAPATH .. '/' ..  table.concat(nameBuf, ' ')
-        fs.create_directories(fs.path(fileDir))
+        local ok, err = pcall(fs.create_directories, fs.path(fileDir))
+        if not ok then
+            log.error("Unable to create directory:", fileDir, err)
+        end
         buildMeta.build(fileDir, params)
         client.setConfig {
             {

@@ -7,6 +7,7 @@ local util     = require 'utility'
 local lloader  = require 'locale-loader'
 local json     = require 'json-beautify'
 local diagd    = require 'proto.diagnostic'
+local log      = require 'log'
 
 local function mergeDiagnosticGroupLocale(locale)
     for groupName, names in pairs(diagd.diagnosticGroups) do
@@ -185,7 +186,11 @@ end
 
 local function buildMarkdown(lang)
     local dir = fs.path 'doc' / lang
-    fs.create_directories(dir)
+    local ok, err = pcall(fs.create_directories, dir)
+    if not ok then
+        log.error("Failed to create directory:", dir:string(), err)
+        return nil
+    end
     local configDoc = markdown()
 
     for name, conf in util.sortPairs(config) do

@@ -5,7 +5,11 @@ local fsu    = require 'fs-utility'
 
 local path = fs.path(LOGPATH) / 'fw'
 
-fs.create_directories(path)
+local ok, err = pcall(fs.create_directories, path)
+if not ok then
+    io.stderr:write(string.format("Failed to create test directory %s: %s\n", path:string(), err))
+    return
+end
 
 os.remove((path / 'test.txt'):string())
 

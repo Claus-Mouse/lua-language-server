@@ -6,6 +6,7 @@ local SDBMHash    = require 'SDBMHash'
 local searchCode  = require 'plugins.ffi.searchCode'
 local cdefRerence = require 'plugins.ffi.cdefRerence'
 local ffi         = require 'plugins.ffi'
+local log         = require 'log'
 
 local function createDir(uri)
     local dir     = scope.getScope(uri).uri or 'default'
@@ -13,7 +14,10 @@ local function createDir(uri)
     if fs.exists(fileDir) then
         return fileDir, true
     end
-    fs.create_directories(fileDir)
+    local ok, err = pcall(fs.create_directories,fileDir)
+    if not ok then
+        log.error("Unable to create file directory:", fileDir, err)
+    end
     return fileDir
 end
 

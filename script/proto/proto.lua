@@ -268,7 +268,10 @@ function m.listen(mode, socketPort)
         pub.task('loadProtoByStdio')
     elseif mode == 'socket' then
         local unixFolder = LOGPATH .. '/unix'
-        fs.create_directories(fs.path(unixFolder))
+        local ok, err = pcall(fs.create_directories, fs.path(unixFolder))
+        if not ok then
+            log.error("Failed to create socket directory:", err)
+        end
         local unixPath = unixFolder .. '/' .. tostring(socketPort)
 
         local server = net.listen('unix', unixPath)

@@ -7,7 +7,10 @@ local fsu   = require 'fs-utility'
 
 local metaPath    = fs.path 'meta/3rd/love2d'
 local libraryPath = metaPath / 'library'
-fs.create_directories(libraryPath)
+local ok, err = pcall(fs.create_directories,libraryPath)
+if not ok then
+    log.error("Unable to create love-api path:", libraryPath, err)
+end
 
 local knownTypes = {
     ['nil']            = 'nil',
@@ -263,7 +266,10 @@ local function buildFile(class, defs)
 
     text[#text+1] = ''
 
-    fs.create_directories(filePath:parent_path())
+    ok, err = pcall(fs.create_directories, filePath:parent_path())
+    if not ok then
+        log.error("Failed to create dir:", filePath:parent_path():string(), err)
+    end
     fsu.saveFile(filePath, table.concat(text, '\n'))
 end
 

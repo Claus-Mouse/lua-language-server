@@ -150,7 +150,10 @@ function m.init(root, path)
     m.size = 0
     pcall(function ()
         if not fs.exists(path:parent_path()) then
-            fs.create_directories(path:parent_path())
+            local ok, err = pcall(fs.create_directories, path:parent_path())
+            if not ok then
+                log.error("Unable to create parent path directory:", path:parent_path(), err)
+            end
         end
     end)
     if lastBuf then

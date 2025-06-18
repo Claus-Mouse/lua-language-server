@@ -1,11 +1,15 @@
 local fs    = require 'bee.filesystem'
 local fsu   = require 'fs-utility'
+local log   = require 'log'
 
 local api = dofile('3rd/lovr-api/api/init.lua')
 
 local metaPath    = fs.path 'meta/3rd/lovr'
 local libraryPath = metaPath / 'library'
-fs.create_directories(libraryPath)
+local ok, err = pcall(fs.create_directories,libraryPath)
+if not ok then
+    log.error("Unable to create lovr-api directory:", libraryPath, err)
+end
 
 local knownTypes = {
     ['nil']            = 'nil',
@@ -246,7 +250,10 @@ local function buildFile(defs)
 
     text[#text+1] = ''
 
-    fs.create_directories(filePath:parent_path())
+    ok, err = pcall(fs.create_directories,filePath:parent_path())
+    if not ok then
+        log.error("Unable to create parent_path directory:", filePath:parent_path())
+    end
     fsu.saveFile(filePath, table.concat(text, '\n'))
 end
 

@@ -1,10 +1,13 @@
 local fs          = require 'bee.filesystem'
 local linkedTable = require 'linked-table'
+local log   = require 'log'
 
 local setmt = setmetatable
 local pairs = pairs
 local iopen = io.open
 local mmax  = math.max
+
+local pcall = pcall
 
 _ENV = nil
 
@@ -160,7 +163,10 @@ end
 ---@param errorHandle? fun(string)
 ---@return lazy-cacher?
 return function (dir, errorHandle)
-    fs.create_directories(fs.path(dir))
+    local ok, err = pcall(fs.create_directories, fs.path(dir))
+    if not ok then
+        log.error("Unable to create directory:", dir, err)
+    end
     local self = setmt({
         _dir         = dir,
         _opening     = linkedTable(),
